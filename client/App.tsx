@@ -27,27 +27,29 @@ export function App() {
 
     useEffect(() => {
         socket.on("connect", () => {
-            console.log(`Connected with socketID: ${socket.id}`);
-            //setInterval(() => {console.log(cookie.getCookie("test"));}, 2000);
+            console.log(`Connected with socketID: ${socket.id}`);            
         });
+
+        /*setInterval(() => {
+            let obj =
+            socket.emit("GetData", );
+        }, 3000); */
         
         return () => {
             socket.off("connect");
         };        
-    }, []); 
+    }, []);
 
     return (
         <Router>
             <div className="app-container">
                 <Switch>
-                    <Route path="/map" component={MapPage} />            {/* Here add socket, onClick functions for buttons, other data from server as attributes */}
-                    <Route path="/settings" component={SettingsPage} />  {/* Here add socket, onClick functions for buttons, other data from server as attributes */}
-                    <Route path="/friends" component={FriendsPage} />    {/* Here add socket, onClick functions for buttons, other data from server as attributes */}
-                    <Route path="/login" component={LoginPage} />        {/* Here add socket, onClick functions for buttons, other data from server as attributes */}
-                    <Route path="/register" component={RegisterPage} />  {/* Here add socket, onClick functions for buttons, other data from server as attributes */}
-                    <Route path="/" component={MapPage} />               {/* Here add socket, onClick functions for buttons, other data from server as attributes */}             
-                    {/* <Redirect exact from="/" to="/login" /> */}
-                    {/* <Redirect exact from="/" to="/map" /> */}
+                    <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)}/> 
+                    <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />                    
                 </Switch>
                 <BottomNavigation />
             </div>

@@ -1,27 +1,27 @@
 export class _User {
-    name: String;
-    login: String;
-    id: Number;
-    coordLng: Number;
-    coordLat: Number;
-    friends: [Number];
-    friendsReceivedReq: [Number];
-    friendsSentReq: [Number];
-    imageSrc: String;
-    trackingGeo: Boolean;
-    mapStyle: Number;
+    name: string;
+    login: string;
+    id: number;
+    coordLng: number;
+    coordLat: number;
+    friends: number[];
+    friendsReceivedReq: number[];
+    friendsSentReq: number[];
+    imageSrc: string;
+    trackingGeo: boolean;
+    mapStyle: number;
 
-    constructor(    newname: String,
-                    newlogin: String,
-                    newid: Number,
-                    newcoordLng: Number,
-                    newcoordLat: Number,
-                    newfriends: [Number],
-                    newfriendsReceivedReq: [Number],
-                    newfriendsSentReq: [Number],
-                    newimageSrc: String,
-                    newtrackingGeo: Boolean,
-                    newmapStyle: Number 
+    constructor(    newname: string,
+                    newlogin: string,
+                    newid: number,
+                    newcoordLng: number,
+                    newcoordLat: number,
+                    newfriends: number[],
+                    newfriendsReceivedReq: number[],
+                    newfriendsSentReq: number[],
+                    newimageSrc: string,
+                    newtrackingGeo: boolean,
+                    newmapStyle: number 
                 ) {
         this.name = newname;
         this.login = newlogin;
@@ -38,21 +38,21 @@ export class _User {
 }
 
 export class _Friend {
-    name: String;
-    login: String;
-    id: Number;
-    coordLng: Number;
-    coordLat: Number; 
-    imageSrc: String;
-    trackingGeo: Boolean;
+    name: string;
+    login: string;
+    id: number;
+    coordLng: number;
+    coordLat: number; 
+    imageSrc: string;
+    trackingGeo: boolean;
 
-    constructor(    newname: String,
-                    newlogin: String,
-                    newid: Number,
-                    newcoordLng: Number,
-                    newcoordLat: Number,
-                    newimageSrc: String,
-                    newtrackingGeo: Boolean                     
+    constructor(    newname: string,
+                    newlogin: string,
+                    newid: number,
+                    newcoordLng: number,
+                    newcoordLat: number,
+                    newimageSrc: string,
+                    newtrackingGeo: boolean                     
                 ) {
         this.name = newname;
         this.login = newlogin;
@@ -64,10 +64,10 @@ export class _Friend {
     }
 }
 
-export function User(...args: [String, String, Number, Number, Number, [Number], [Number], [Number], String, Boolean, Number]) {
+export function User(...args: [string, string, number, number, number, number[], number[], number[], string, boolean, number]) {
     return new _User(...args);
 }
 
-export function Friend(...args: [String, String, Number, Number, Number, String, Boolean]) {
+export function Friend(...args: [string, string, number, number, number, string, boolean]) {
     return new _Friend(...args);
 }

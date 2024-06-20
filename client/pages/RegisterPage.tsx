@@ -1,8 +1,17 @@
 import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router';
 
-export function RegisterPage() {
+import { Redirect } from 'react-router-dom';
+import { Socket, io } from 'socket.io-client';
+import * as cookie from "../utils/Cookie-util";
+import {User, Friend, _User, _Friend} from "../User";
+
+export function RegisterPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
     const history = useHistory();
+
+    if (props.isAuth) {
+        return (<Redirect exact from="/register" to="/map" />);                
+    }
 
     const [usernameStatus, setUsernameStatus] = useState<boolean | null>(null);
     const [profilePhotoSelected, setProfilePhotoSelcted] =
