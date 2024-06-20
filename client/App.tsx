@@ -14,14 +14,21 @@ import { RegisterPage } from './pages/RegisterPage';
 
 import { io } from 'socket.io-client';
 
+import * as cookie from "./utils/Cookie-util";
+import {User, Friend} from "./User";
+
 export function App() {
     let login: boolean = false;
 
     let [socket, setSocket] = useState(io());
+    let [isAuth, setIsAuth] = useState(false);
+    let [user, setUser] = useState(User("abc", "test", -1, -1, -1, [-1], [-1], [-1], "-", false, -1));
+    let [friends, setFriends] = useState([Friend("fr", "fr", -1, -1, -1, "-", false)]);
 
     useEffect(() => {
         socket.on("connect", () => {
             console.log(`Connected with socketID: ${socket.id}`);
+            //setInterval(() => {console.log(cookie.getCookie("test"));}, 2000);
         });
         
         return () => {
