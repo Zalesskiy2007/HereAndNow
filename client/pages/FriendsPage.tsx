@@ -1,7 +1,7 @@
 import React from 'react';
 import { Friends } from '../components/friends/Friends';
 
-import { Redirect } from 'react-router-dom';
+import { Redirect, Switch} from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import * as cookie from "../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../User";
@@ -14,6 +14,6 @@ export function FriendsPage(props: {socket: Socket, user: _User, friends: _Frien
             </div>
         );
     } else {
-        return (<Redirect exact from="/friends" to="/login" />);
+        return (<Switch><Redirect exact from="/friends" to="/login" /></Switch>);
     }
 }

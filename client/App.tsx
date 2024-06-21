@@ -11,45 +11,60 @@ import {
 } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-
 import { io } from 'socket.io-client';
-
-import * as cookie from "./utils/Cookie-util";
 import {User, Friend} from "./User";
+import * as cookie from "./utils/Cookie-util";
 
 export function App() {
-    let login: boolean = false;
+    let socket= useRef(io());
 
-    let [socket, setSocket] = useState(io());
-    let [isAuth, setIsAuth] = useState(false);
+    //cookie.deleteCookie(cookie.name); //reset
+
+    let [sesId, setSesId] = useState(cookie.getCookie(cookie.name));
+    const setAuthFromSesId = (idData: string) => {
+        if (idData === cookie.noneValue) return false;
+        else return true;         
+    };
+
+    let [isAuth, setIsAuth] = useState(setAuthFromSesId(sesId));
+
     let [user, setUser] = useState(User("abc", "test", -1, -1, -1, [-1], [-1], [-1], "-", false, -1));
     let [friends, setFriends] = useState([Friend("fr", "fr", -1, -1, -1, "-", false)]);
 
     useEffect(() => {
-        socket.on("connect", () => {
-            console.log(`Connected with socketID: ${socket.id}`);            
+        socket.current.on("connect", () => {
+            console.log(`Connected with socketID: ${socket.current.id}`);            
         });
-
-        /*setInterval(() => {
-            let obj =
-            socket.emit("GetData", );
-        }, 3000); */
         
+        socket.current.on("logIn", (data) => {
+            let d = JSON.parse(data).sesId.toString();
+            cookie.setCookie(cookie.name, d);             
+            setSesId(d);          
+        });
+        
+        let data = cookie.getCookie(cookie.name);
+        setSesId(data);
+        setIsAuth(setAuthFromSesId(data));
+
         return () => {
-            socket.off("connect");
+            socket.current.off("connect");
         };        
-    }, []);
+    }, []);   
+
+   useEffect(() => {
+        setIsAuth(setAuthFromSesId(sesId));      
+    }, [sesId]);
 
     return (
         <Router>
             <div className="app-container">
                 <Switch>
-                    <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)}/> 
-                    <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />                    
+                    <Route path="/map" render={(props) => (<MapPage {...props} socket={socket.current} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket.current} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket.current} user={user} friends={friends} isAuth={isAuth}/>)} />
+                    <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket.current} user={user} friends={friends} isAuth={isAuth}/>)}/> 
+                    <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket.current} user={user} friends={friends} isAuth={isAuth}/>)} />                    
+                    <Redirect exact from="/" to="/map" />
                 </Switch>
                 <BottomNavigation />
             </div>

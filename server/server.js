@@ -8,6 +8,8 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+import generateUniqueId from 'generate-unique-id';
+
 import { User } from './user.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,6 +61,102 @@ mongoose.connect('mongodb://127.0.0.1:27017/HereAndNow');
 
 io.on('connection', (socket) => {
     console.log(`Client connected with id: ${socket.id}`);
+
+    // Clear database
+    /*User.find()
+        .then((res) => {
+            for (let i = 0; i < res.length; i = i + 1) {
+                User.deleteOne({ login: res[i].login })
+                    .then(() => {
+                        console.log('Deleted succeed!');
+                    })
+                    .catch((err) => console.log(err));
+            }
+        })
+        .catch((err) => console.log(err)); */
+
+    socket.on('checkLogin', (data) => {
+        let obj = {
+            status: 'null'
+        };
+
+        if (data === '') {
+            obj.status = 'null';
+            socket.emit('checkLoginResponse', JSON.stringify(obj));
+        } else {
+            User.findOne({ login: data })
+                .then((res) => {
+                    if (res !== null) obj.status = 'not_avaliable';
+                    else obj.status = 'avaliable';
+
+                    socket.emit('checkLoginResponse', JSON.stringify(obj));
+                })
+                .catch((err) => {
+                    console.log('Error: ' + err);
+                    obj.status = 'null';
+                    socket.emit('checkLoginResponse', JSON.stringify(obj));
+                });
+        }
+    });
+
+    socket.on('registerSubmit', (data) => {
+        let d = JSON.parse(data);
+
+        User.find()
+            .then((res) => {
+                let search = true;
+                let gen = -1;
+
+                while (search) {
+                    let newSesId = generateUniqueId({
+                        length: 20,
+                        useLetters: false,
+                        useNumbers: true
+                    });
+
+                    let find = false;
+                    for (let i = 0; i < res.length; i = i + 1) {
+                        if (res[i].sessionId === newSesId) {
+                            find = true;
+                            break;
+                        }
+                    }
+
+                    if (!find) {
+                        search = false;
+                        gen = newSesId;
+                    }
+                }
+
+                let pers = new User({
+                    name: d.name,
+                    login: d.login,
+                    password: d.password,
+                    coordLng: 0,
+                    coordLat: 0,
+                    sessionId: gen,
+                    friends: [],
+                    friendsReceivedReq: [],
+                    friendsSentReq: [],
+                    imageSrc: d.img,
+                    imageWidth: d.imgW,
+                    imageHeight: d.imgH,
+                    trackingGeo: true,
+                    mapStyle: 0
+                });
+
+                pers.save()
+                    .then((res) => {
+                        socket.emit('logIn', JSON.stringify({ sesId: res.sessionId }));
+                    })
+                    .catch((err) => {
+                        console.log('Error: ' + err);
+                    });
+            })
+            .catch((err) => {
+                console.log('Error: ' + err);
+            });
+    });
 
     socket.on('disconnect', () => {
         console.log(`Client disconnected with id: ${socket.id}`);

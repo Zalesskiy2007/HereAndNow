@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 
 async function main() {
+    window.localStorage.isAuth = false;
+    
     const rootElement = document.getElementById('root');
     if (!rootElement) return;
 

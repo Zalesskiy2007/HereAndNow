@@ -1,7 +1,7 @@
 /*
  * General utils for managing cookies in Typescript.
  */
-export function setCookie(name: string, val: string) {
+export function setCookie(thisName: string, val: string) {
     const date = new Date();
     const value = val;
 
@@ -9,26 +9,31 @@ export function setCookie(name: string, val: string) {
     date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
 
     // Set it
-    document.cookie = name+"="+value+"; expires="+date.toUTCString()+"; path=/";
+    document.cookie = thisName+"="+value+"; expires="+date.toUTCString()+"; path=/";
 }
 
-export function getCookie(name: string) {
+export let noneValue = "thisCookieIsNoneValue";
+export let name = "HANSessionId";
+
+export function getCookie(thisName: string) {
     const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
+    const parts = value.split("; " + thisName + "=");
     
     if (parts !== undefined && parts.length == 2) {
         let x = parts.pop();
         if (x !== undefined) {
-            return x.split(";").shift();
+            let a = x.split(";").shift();
+            if (a === undefined) return noneValue;
+            else return a;
         } else {
-            return null;
+            return noneValue;
         }
     } else {
-        return null;
+        return noneValue;
     }
 }
 
-export function deleteCookie(name: string) {
+/*export function deleteCookie(name: string) {
     const date = new Date();
 
     // Set it expire in -1 days
@@ -36,4 +41,8 @@ export function deleteCookie(name: string) {
 
     // Set it
     document.cookie = name+"=; expires="+date.toUTCString()+"; path=/";
+} */
+
+export function deleteCookie(thisName: string) {
+    setCookie(thisName, noneValue);
 }
