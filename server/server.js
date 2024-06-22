@@ -61,7 +61,7 @@ const io = new Server(server);
 mongoose.connect('mongodb://127.0.0.1:27017/HereAndNow');
 
 io.on('connection', (socket) => {
-    console.log(`Client connected with id: ${socket.id}`); // WHY SUCH A LOT OF CONNECTIONS???!!!
+    console.log(`Client connected with id: ${socket.id}`);
 
     // Clear database
     /*User.find()
@@ -218,7 +218,6 @@ io.on('connection', (socket) => {
             User.findOne({ sessionId: sId })
                 .then((res) => {
                     if (!res) {
-                        //todo
                         socket.emit('logOut');
                     } else {
                         let obj = {
@@ -241,11 +240,35 @@ io.on('connection', (socket) => {
                 .catch((err) => {
                     console.log(err);
 
-                    //todo
                     socket.emit('logOut');
                 });
         } else {
-            //todo
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('settingsChangeGeo', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { trackingGeo: !res.trackingGeo })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
             socket.emit('logOut');
         }
     });

@@ -6,11 +6,11 @@ import { Socket, io } from 'socket.io-client';
 import * as cookie from "../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../User";
 
-export function MapPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
+export function MapPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     if (props.isAuth) {
         return (
             <div className="map-wrapper">
-                <Map socket={props.socket} user={props.user} friends={props.friends} isAuth={props.isAuth}/>
+                <Map socket={props.socket} user={props.user} friends={props.friends} isAuth={props.isAuth} sesId={props.sesId}/>
             </div>
         );
     } else {

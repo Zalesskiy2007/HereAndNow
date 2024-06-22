@@ -4,7 +4,7 @@ import { Socket, io } from 'socket.io-client';
 import * as cookie from "../../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../../User";
 
-export function Friends(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
+export function Friends(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     interface User {
         id: number;
         username: string;
@@ -80,8 +80,8 @@ export function Friends(props: {socket: Socket, user: _User, friends: _Friend[],
                     onChange={handleSearchChange}
                     onBlur={() => {
                         let input = document.getElementById('friends-search-input') as HTMLInputElement;
-                        setSearchTerm('');
                         input.value = '';
+                        // setSearchTerm(''); 
                     }}
                 />
             </div>

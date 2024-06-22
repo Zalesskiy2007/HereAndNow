@@ -206,6 +206,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding-left: 5%;
+  box-sizing: border-box;
 }
 
 .hide-geo-toggle input {
@@ -229,6 +231,9 @@
   box-sizing: border-box;
 
   transition: background-color 0.2s;
+
+  margin-left: auto;
+  margin-right: 1%;
 }
 
 .hide-geo-toggle i::before {

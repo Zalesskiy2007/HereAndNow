@@ -17,6 +17,11 @@ import * as cookie from "./utils/Cookie-util";
 
 let socket = io();
 
+function setIntervalImmediatly(func: any, interval: number) {
+    func();
+    return setInterval(func, interval);
+}
+
 export function App() {
     //cookie.deleteCookie(cookie.name); //reset
 
@@ -72,7 +77,7 @@ export function App() {
             let d = JSON.parse(userData);        
             let us = User(d.name, d.login, d.id, d.coordLng, d.coordLat, d.friends, d.friendsReceivedReq, d.friendsSentReq, d.imageSrc, d.trackingGeo, d.mapStyle);
             setUser(us);
-            console.log("setUser");
+            console.log("setUser from " + user.name + " to " + us.name);
         }        
     }, [userData]);
 
@@ -82,7 +87,7 @@ export function App() {
 
         if (b === true) {
             clearInterval(intervalReq.current);
-            intervalReq.current = setInterval(() => {                
+            intervalReq.current = setIntervalImmediatly(() => {                
                 // socket emit request data about users and person themself, and maybe send new geo
                 socket.emit("requestPerson", sesId);
                 console.log("requestPerson");
@@ -115,15 +120,15 @@ export function App() {
         <Router>
             <div className="app-container">
                 <Switch>
-                    <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)}/> 
-                    <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />                    
+                    <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)}/> 
+                    <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />                    
                     <Redirect exact from="/" to="/map" />
                     <Route>
                         <div className="main-area">
                             <Switch>
-                                <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                                <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                                <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                                <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
+                                <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
+                                <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
                                 <Redirect exact from="/" to="/map" />
                             </Switch>
                         </div>

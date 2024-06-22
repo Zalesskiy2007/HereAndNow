@@ -6,7 +6,7 @@ import { Socket, io } from 'socket.io-client';
 import * as cookie from "../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../User";
 
-export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
+export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     const history = useHistory();
 
     if (props.isAuth) {                

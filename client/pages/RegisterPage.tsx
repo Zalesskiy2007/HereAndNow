@@ -7,7 +7,7 @@ import * as cookie from "../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../User";
 import { imageToData, dataToImage } from '../utils/Image';
 
-export function RegisterPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
+export function RegisterPage(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     const history = useHistory();
 
     if (props.isAuth) {

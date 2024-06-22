@@ -6,7 +6,7 @@ import { Socket, io } from 'socket.io-client';
 import * as cookie from "../../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../../User";
 
-export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean}) {
+export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     const spbCoords = {
         lng: 30.3158,
         lat: 59.9398
