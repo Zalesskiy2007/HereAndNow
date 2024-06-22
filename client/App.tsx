@@ -97,18 +97,41 @@ export function App() {
         };
     }, [sesId]);
 
+    useEffect(() => {
+        function updateVH() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        updateVH();
+        window.addEventListener('resize', updateVH);
+
+        return () => {
+            window.removeEventListener('resize', updateVH);
+        };
+    }, []);
+
     return (
         <Router>
             <div className="app-container">
                 <Switch>
-                    <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
-                    <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
                     <Route path="/login" render={(props) => (<LoginPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)}/> 
                     <Route path="/register" render={(props) => (<RegisterPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />                    
                     <Redirect exact from="/" to="/map" />
+                    <Route>
+                        <div className="main-area">
+                            <Switch>
+                                <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                                <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                                <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth}/>)} />
+                                <Redirect exact from="/" to="/map" />
+                            </Switch>
+                        </div>
+                        <div className="bottom-area">
+                            <BottomNavigation />
+                        </div>
+                    </Route>                    
                 </Switch>
-                <BottomNavigation />
             </div>
         </Router>
     );

@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-    Layer,
-    Popup,
-    Source
+    Popup
 } from '../../../node_modules/react-map-gl/dist/es5/exports-maplibre';
 
 

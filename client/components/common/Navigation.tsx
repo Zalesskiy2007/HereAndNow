@@ -12,39 +12,36 @@ export function BottomNavigation() {
 
     return (
         <nav className="bottom-navigation">
-            <button
-                className={getActiveClass('/friends')}
-                onClick={() => {
-                    history.push('/friends');
-                }}
-            >
-                Friends
-            </button>
-            <button
-                className={getActiveClass('/map')}
-                onClick={() => {
-                    history.push('/map');
-                }}
-            >
-                Map
-            </button>
-            <button
-                className={getActiveClass('/settings')}
-                onClick={() => {
-                    history.push('/settings');
-                }}
-            >
-                Settings
-            </button>
-            {/* <NavLink exact to="/friends" className="active">
-                Friends
-            </NavLink>
-            <NavLink exact to="/map" className="active">
-                Map
-            </NavLink>
-            <NavLink exact to="/settings" className="active">
-                Settings
-            </NavLink> */}
+            <div className="nav-button">
+                <button
+                    className={getActiveClass('/friends')}
+                    onClick={() => {
+                        history.push('/friends');
+                    }}
+                >
+                    Friends
+                </button>
+            </div>
+            <div className="nav-button">
+                <button
+                    className={getActiveClass('/map')}
+                    onClick={() => {
+                        history.push('/map');
+                    }}
+                >
+                    Map
+                </button>
+            </div>
+            <div className="nav-button">
+                <button
+                    className={getActiveClass('/settings')}
+                    onClick={() => {
+                        history.push('/settings');
+                    }}
+                >
+                    Settings
+                </button>
+            </div>
         </nav>
     );
 }

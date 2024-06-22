@@ -4,12 +4,12 @@
 
 @font-face {
   font-family: 'SF UI Display';
-  src: url('./assets/fonts/SFUIText-Regular.ttf');
+  src: url('../assets/fonts/SFUIText-Regular.ttf');
 }
 
 @font-face {
   font-family: 'SF UI Display Header';
-  src: url('./assets/fonts/SFUIText-Medium.ttf');
+  src: url('..  /assets/fonts/SFUIText-Medium.ttf');
 }
 
 .login-wrapper {
@@ -83,6 +83,10 @@ h2 {
   box-sizing: border-box;
   font-size: 1.5vh;
   font-family: 'SF UI Display';
+
+  touch-action: manipulation;
+  outline: none;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 .submit-button {
