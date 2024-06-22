@@ -13,6 +13,19 @@ export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[
         return (<Switch><Redirect exact from="/login" to="/map" /></Switch>);                
     }
 
+    let loginForm = () => {
+        let lUs = document.getElementById("loginUs") as HTMLInputElement;
+        let lPass = document.getElementById("loginPass") as HTMLInputElement; 
+        
+        if (lUs.value !== "" && lPass.value !== "") {
+            let obj = {
+                login: lUs.value,
+                password: lPass.value
+            };
+            props.socket.emit("loginSubmit", JSON.stringify(obj));
+        }
+    };
+
     return (
         <div className="login-wrapper">
             <div className="login-content">
@@ -22,6 +35,7 @@ export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[
                     </div>
                     <div className="div-row row-username">
                         <input
+                            id='loginUs'
                             type="text"
                             className="input"
                             placeholder="username"
@@ -29,6 +43,7 @@ export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[
                     </div>
                     <div className="div-row row-password">
                         <input
+                            id='loginPass'
                             type="password"
                             className="input"
                             placeholder="password"
@@ -37,9 +52,7 @@ export function LoginPage(props: {socket: Socket, user: _User, friends: _Friend[
                     <div className="div-row">
                         <button
                             className="submit-button"
-                            onClick={() => {
-                                history.push('/map');
-                            }}
+                            onClick={loginForm}
                         >
                             Login
                         </button>

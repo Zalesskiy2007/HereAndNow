@@ -100,6 +100,58 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('loginSubmit', (data) => {
+        let d = JSON.parse(data);
+
+        User.findOne({ login: d.login })
+            .then((res) => {
+                if (res !== null) {
+                    if (res.password === d.password) {
+                        User.find()
+                            .then((r) => {
+                                let s = true;
+                                let g = -1;
+
+                                while (s) {
+                                    let newSesId = generateUniqueId({
+                                        length: 20,
+                                        useLetters: false,
+                                        useNumbers: true
+                                    });
+
+                                    let f = false;
+                                    for (let i = 0; i < res.length; i = i + 1) {
+                                        if (r[i].sessionId === newSesId) {
+                                            f = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!f) {
+                                        s = false;
+                                        g = newSesId;
+                                    }
+                                }
+
+                                User.updateOne({ login: d.login }, { sessionId: g })
+                                    .then((q) => {
+                                        socket.emit('logIn', JSON.stringify({ sesId: g }));
+                                    })
+                                    .catch((p) => {
+                                        console.log('Error: ' + p);
+                                    });
+                            })
+                            .catch((e) => {
+                                console.log('Error: ' + e);
+                            });
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log('Error: ' + err);
+            });
+    });
+
     socket.on('registerSubmit', (data) => {
         let d = JSON.parse(data);
 
