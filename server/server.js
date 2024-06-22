@@ -14,6 +14,7 @@ import { User } from './user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const cookieNoneValue = '-1';
 
 const app = express();
 app.use(morgan('combined'));
@@ -60,7 +61,7 @@ const io = new Server(server);
 mongoose.connect('mongodb://127.0.0.1:27017/HereAndNow');
 
 io.on('connection', (socket) => {
-    console.log(`Client connected with id: ${socket.id}`);
+    console.log(`Client connected with id: ${socket.id}`); // WHY SUCH A LOT OF CONNECTIONS???!!!
 
     // Clear database
     /*User.find()
@@ -73,7 +74,7 @@ io.on('connection', (socket) => {
                     .catch((err) => console.log(err));
             }
         })
-        .catch((err) => console.log(err)); */
+        .catch((err) => console.log(err));*/
 
     socket.on('checkLogin', (data) => {
         let obj = {
@@ -156,6 +157,45 @@ io.on('connection', (socket) => {
             .catch((err) => {
                 console.log('Error: ' + err);
             });
+    });
+
+    socket.on('requestPerson', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        //todo
+                        socket.emit('logOut');
+                    } else {
+                        let obj = {
+                            name: res.name,
+                            login: res.login,
+                            id: res._id,
+                            coordLng: res.coordLng,
+                            coordLat: res.coordLat,
+                            friends: res.friends,
+                            friendsReceivedReq: res.friendsReceivedReq,
+                            friendsSentReq: res.friendsSentReq,
+                            imageSrc: res.imageSrc,
+                            trackingGeo: res.trackingGeo,
+                            mapStyle: res.mapStyle
+                        };
+
+                        socket.emit('setPerson', JSON.stringify(obj));
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    //todo
+                    socket.emit('logOut');
+                });
+        } else {
+            //todo
+            socket.emit('logOut');
+        }
     });
 
     socket.on('disconnect', () => {

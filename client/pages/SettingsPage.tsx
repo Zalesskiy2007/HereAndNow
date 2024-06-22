@@ -10,7 +10,7 @@ export function SettingsPage(props: {socket: Socket, user: _User, friends: _Frie
     if (props.isAuth) {
         return (
             <div>
-                <Settings />
+                <Settings socket={props.socket} user={props.user} friends={props.friends} isAuth={props.isAuth}/>
             </div>
         );
     } else {        

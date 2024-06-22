@@ -10,7 +10,7 @@ export function MapPage(props: {socket: Socket, user: _User, friends: _Friend[],
     if (props.isAuth) {
         return (
             <div className="map-wrapper">
-                <Map />
+                <Map socket={props.socket} user={props.user} friends={props.friends} isAuth={props.isAuth}/>
             </div>
         );
     } else {

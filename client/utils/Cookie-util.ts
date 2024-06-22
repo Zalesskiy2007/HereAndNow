@@ -12,7 +12,7 @@ export function setCookie(thisName: string, val: string) {
     document.cookie = thisName+"="+value+"; expires="+date.toUTCString()+"; path=/";
 }
 
-export let noneValue = "thisCookieIsNoneValue";
+export let noneValue = "-1";
 export let name = "HANSessionId";
 
 export function getCookie(thisName: string) {
