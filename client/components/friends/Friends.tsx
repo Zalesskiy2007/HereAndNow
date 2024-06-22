@@ -80,6 +80,7 @@ export function Friends(props: {socket: Socket, user: _User, friends: _Friend[],
                     onChange={handleSearchChange}
                     onBlur={() => {
                         let input = document.getElementById('friends-search-input') as HTMLInputElement;
+                        setSearchTerm('');
                         input.value = '';
                     }}
                 />
