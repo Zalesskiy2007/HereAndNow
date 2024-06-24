@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
 
 import { Socket, io } from 'socket.io-client';
 import * as cookie from "../../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../../User";
+import { imageToData, dataToImage } from '../../utils/Image';
 
 export function Settings(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
     const [showMapStyles, setShowMapStyles] = useState<boolean>(false);
@@ -19,6 +20,38 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
 
     const toggleMapSyles = () => {
         setShowMapStyles(!showMapStyles);
+    };
+
+    const handleLogout = () => {
+        props.socket.emit("settingsLogout");        ;
+    };
+
+    const handleDeleteAccount = () => {
+        props.socket.emit("settingsDeleteAccount", props.sesId);        
+    };
+
+    const handleProfilePhotoChanged = (event: ChangeEvent<HTMLInputElement>) => {
+        let file = event.target;
+        if (file !== null && file.files !== null && file.files[0] !== undefined) {
+            let url = URL.createObjectURL(file.files[0]);
+            let newImg = document.createElement('img');
+            newImg.src = url;
+
+            newImg.onload = () => {
+                newImg.width = 512;
+                newImg.height = 512; 
+
+                imageToData(newImg, (data: any) => {
+                    let newSrc = dataToImage(data, newImg.width, newImg.height);
+                    let obj = {
+                        sId: props.sesId,
+                        newImg: newSrc
+                    };                
+                    
+                    props.socket.emit("settingsChangePhoto", JSON.stringify(obj));
+                });
+            }; 
+        }                 
     };
 
     return (
@@ -47,6 +80,7 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
                             id="profile-photo-change"
                             accept="image/*"
                             style={{ display: 'none' }}
+                            onChange={handleProfilePhotoChanged}
                         />
                         <button
                             className="button change-photo-button"
@@ -91,10 +125,10 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
                         </div>
                     </div>
                     <div className="div-row-buttons row-button-block">
-                        <button className="button block-button logout-button" onClick={() => alert(props.user.trackingGeo)}>
+                        <button className="button block-button logout-button" onClick={handleLogout}>
                             Log Out
                         </button>
-                        <button className="button block-button delete-acc-button">
+                        <button className="button block-button delete-acc-button" onClick={handleDeleteAccount}>
                             Delete Account
                         </button>
                     </div>

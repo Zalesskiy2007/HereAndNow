@@ -273,6 +273,54 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('settingsChangePhoto', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { imageSrc: data.newImg })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('settingsLogout', () => {
+        socket.emit('logOut');
+    });
+
+    socket.on('settingsDeleteAccount', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.deleteOne({ sessionId: sId })
+                .then(() => {
+                    socket.emit('logOut');
+                })
+                .catch((err) => {
+                    console.log('Error: ' + err);
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log(`Client disconnected with id: ${socket.id}`);
     });
