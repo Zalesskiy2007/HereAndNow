@@ -6,27 +6,22 @@ import { Socket, io } from 'socket.io-client';
 import * as cookie from "../../utils/Cookie-util";
 import {User, Friend, _User, _Friend} from "../../User";
 
-export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
-    const spbCoords = {
-        lng: 30.3158,
-        lat: 59.9398
-    };
-
+export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {    
     return (
         <Maplibre
             onClick={() => {}}
             id="map"
             initialViewState={{
-                longitude: spbCoords.lng,
-                latitude: spbCoords.lat,
-                zoom: 18
+                longitude: props.user.coordLng,
+                latitude: props.user.coordLat,
+                zoom: 10
             }}
             mapStyle="https://api.maptiler.com/maps/streets/style.json?key=tgMhLsjzo9PFbyrDjEbt"
         >
             <div className="popup-wrapper">
                 <Marker
-                    lng={spbCoords.lng}
-                    lat={spbCoords.lat}
+                    lng={props.user.coordLng}
+                    lat={props.user.coordLat}
                     imageURL={props.user.imageSrc}
                 />
             </div>

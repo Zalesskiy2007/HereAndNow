@@ -247,6 +247,59 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('hideGeo', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { trackingGeo: false })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('setGeo', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { coordLat: data.lat, coordLng: data.lng })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
     socket.on('settingsChangeGeo', (data) => {
         if (data !== cookieNoneValue) {
             let sId = parseInt(data);

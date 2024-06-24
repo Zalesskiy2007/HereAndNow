@@ -16,6 +16,10 @@ import {User, Friend, _User, _Friend} from "./User";
 import * as cookie from "./utils/Cookie-util";
 
 let socket = io();
+const spbCoords = {
+        lng: 30.3158,
+        lat: 59.9398
+    };
 
 function setIntervalImmediatly(func: any, interval: number) {
     func();
@@ -36,11 +40,12 @@ export function App() {
     let [isAuth, setIsAuth] = useState(setAuthFromSesId(sesId));
 
     let intervalReq = useRef<NodeJS.Timeout | undefined>(undefined);
+    let intervalSetPos = useRef<NodeJS.Timeout | undefined>(undefined);
 
-    let [user, setUser] = useState<_User>(User("abc", "test", -1, -1, -1, [-1], [-1], [-1], "-", false, -1));
+    let [user, setUser] = useState<_User>(User("abc", "test", -1, spbCoords.lng, spbCoords.lat, [-1], [-1], [-1], "-", false, -1));
     let [userData, setUserData] = useState("");
 
-    let [friends, setFriends] = useState<_Friend[]>([Friend("fr", "fr", -1, -1, -1, "-", false)]);
+    let [friends, setFriends] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
 
     useEffect(() => {
         socket.on("connect", () => {
@@ -69,6 +74,7 @@ export function App() {
         return () => {
             socket.off("connect");
             clearInterval(intervalReq.current);
+            clearInterval(intervalSetPos.current);
         };        
     }, []);
 
@@ -83,6 +89,41 @@ export function App() {
 
     useEffect(() => {
         let b = setAuthFromSesId(sesId);
+
+        if (b === true) {
+            if (user.trackingGeo === true) {
+                clearInterval(intervalSetPos.current);
+                intervalSetPos.current = setIntervalImmediatly(() => {                                
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        let obj = {
+                            sId: sesId,
+                            lng: pos.coords.longitude,
+                            lat: pos.coords.latitude
+                        };
+
+                        socket.emit("setGeo", JSON.stringify(obj));
+                        console.log("setGeo");
+                    }, (err) => {
+                        socket.emit("hideGeo", sesId);
+                    }, {enableHighAccuracy: true});
+                }, 2000);
+                console.log("Start interval set pos");
+            } else {
+                clearInterval(intervalSetPos.current);
+            }
+        } else {
+            clearInterval(intervalSetPos.current);            
+        } 
+        
+        console.log("useEffect");
+
+        return () => {
+            clearInterval(intervalSetPos.current);
+        };        
+    }, [user.trackingGeo, sesId]);
+
+    useEffect(() => {
+        let b = setAuthFromSesId(sesId);
         setIsAuth(b); 
 
         if (b === true) {
@@ -92,7 +133,7 @@ export function App() {
                 socket.emit("requestPerson", sesId);
                 console.log("requestPerson");
             }, 2000);
-            console.log("Start interval");
+            console.log("Start interval req");
         } else {
             clearInterval(intervalReq.current);
         }  
