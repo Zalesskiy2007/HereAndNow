@@ -15,6 +15,9 @@ import { User } from './user.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const cookieNoneValue = '-1';
+const isNumber = (num) => {
+    return !isNaN(Number(num));
+};
 
 const app = express();
 app.use(morgan('combined'));
@@ -119,6 +122,10 @@ io.on('connection', (socket) => {
                                         useNumbers: true
                                     });
 
+                                    if (!isNumber(newSesId)) {
+                                        continue;
+                                    }
+
                                     let f = false;
                                     for (let i = 0; i < res.length; i = i + 1) {
                                         if (r[i].sessionId === newSesId) {
@@ -166,6 +173,10 @@ io.on('connection', (socket) => {
                         useLetters: false,
                         useNumbers: true
                     });
+
+                    if (!isNumber(newSesId)) {
+                        continue;
+                    }
 
                     let find = false;
                     for (let i = 0; i < res.length; i = i + 1) {
@@ -310,6 +321,33 @@ io.on('connection', (socket) => {
                         socket.emit('logOut');
                     } else {
                         User.updateOne({ sessionId: sId }, { trackingGeo: !res.trackingGeo })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('settingsChangeMap', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { mapStyle: data.style })
                             .then((q) => {})
                             .catch((p) => {
                                 console.log('Error: ' + p);

@@ -3,9 +3,9 @@
  ***/
 
 .maplibregl-popup-content {
-  width: 15vw !important;
-  height: 15vw !important;
-  border: 1vw solid green !important;
+  width: 15vmin !important;
+  height: 15vmin !important;
+  border: 1vmin solid rgb(76.5, 119.85, 204) !important;
   border-radius: 40% !important;
   padding: 0px !important;
   /* justify-content: center !important;
@@ -22,13 +22,14 @@
 }
 
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
-  border-top-color: green !important;
+  border-top-color: rgb(76.5, 119.85, 204) !important;
 }
 
 .maplibregl-popup-tip {
-  border-top-width: 2vw !important;
-  border-left-width: 2vw !important;
-  border-right-width: 2vw !important;
+  border-top-width: 2vmin !important;
+  border-left-width: 2vmin !important;
+  border-right-width: 2vmin !important;
+  transform: translateY(-10%);
 }
 
 .popup-image {

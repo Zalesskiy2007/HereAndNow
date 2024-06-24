@@ -6,21 +6,48 @@ import {User, Friend, _User, _Friend} from "../../User";
 import { imageToData, dataToImage } from '../../utils/Image';
 
 export function Settings(props: {socket: Socket, user: _User, friends: _Friend[], isAuth: Boolean, sesId: String}) {
+    let setThemeFromNumber = (v: number) => {
+        if (v === 0) return 'map';
+        else if (v === 1) return 'satellite';
+        else if (v === 2) return 'hybrid';
+        else return 'map';
+    };
+
+    let setNumberFromTheme = (v: string) => {
+        if (v === 'map') return 0;
+        else if (v === 'satellite') return 1;
+        else if (v === 'hybrid') return 2;
+        else return 0;
+    };
+
     const [showMapStyles, setShowMapStyles] = useState<boolean>(false);
     const [toggleCheck, setToggleCheck] = useState<boolean>(props.user.trackingGeo);
+    const [mapStyle, setMapStyle] = useState<string>(setThemeFromNumber(props.user.mapStyle));    
 
     const handleToggleChange = () => {
         setToggleCheck((toggle) => !toggle);        
         props.socket.emit("settingsChangeGeo", props.sesId); 
     };
 
+    const handleMapChange = (n: string) => {
+        let g = setNumberFromTheme(n);
+
+        setMapStyle(setThemeFromNumber(g));
+        let obj = {
+            sId: props.sesId,
+            style: g
+        };
+        props.socket.emit("settingsChangeMap", JSON.stringify(obj)); 
+    };
+
+    const getActiveMapStyle = (style: string) => {
+        return mapStyle === style ? 'active' : '';
+    };
+
     useEffect(() => {
         setToggleCheck(props.user.trackingGeo);
+        setMapStyle(setThemeFromNumber(props.user.mapStyle));
     }, [props.user]);
-
-    const toggleMapSyles = () => {
-        setShowMapStyles(!showMapStyles);
-    };
 
     const handleLogout = () => {
         props.socket.emit("settingsLogout");        ;
@@ -58,9 +85,6 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
         <div className="settings-content">
             <div className="settings-content-wrapper">
                 <div className="user-info-wrapper">
-                    <div className="edit-button">
-                        <button>Edit</button>
-                    </div>
                     <div className="div-row-user-info row-profile-photo">
                         <img src={props.user.imageSrc} />
                     </div>
@@ -103,25 +127,39 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
                             />
                             <i></i>
                         </label>
-                        <div
-                            className="button block-button map-style-button"
-                            onClick={toggleMapSyles}
-                        >
-                            Map Style{' '}
-                            <i
-                                className={`fas fa-chevron-right ${
-                                    showMapStyles ? 'open' : ''
-                                }`}
-                            ></i>
-                            {showMapStyles && (
-                                <div className="map-styles-dropdown">
-                                    <ul>
-                                        <li>Style 1</li>
-                                        <li>Style 2</li>
-                                        <li>Style 3</li>
-                                    </ul>
+                        <div className="button block-button map-style-button">
+                            <nav className="map-style-nav">
+                                <div className="nav-button-style">
+                                    <button
+                                        className={getActiveMapStyle('map')}
+                                        onClick={() => {
+                                            handleMapChange('map');
+                                        }}
+                                    >
+                                        Map
+                                    </button>
                                 </div>
-                            )}
+                                <div className="nav-button-style">
+                                    <button
+                                        className={getActiveMapStyle('satellite')}
+                                        onClick={() => {
+                                            handleMapChange('satellite');
+                                        }}
+                                    >
+                                        Satellite
+                                    </button>
+                                </div>
+                                <div className="nav-button-style">
+                                    <button
+                                        className={getActiveMapStyle('hybrid')}
+                                        onClick={() => {
+                                            handleMapChange('hybrid');
+                                        }}
+                                    >
+                                        Detailed
+                                    </button>
+                                </div>
+                            </nav>
                         </div>
                     </div>
                     <div className="div-row-buttons row-button-block">
