@@ -19,8 +19,7 @@ export function Settings(props: {socket: Socket, user: _User, friends: _Friend[]
         else if (v === 'hybrid') return 2;
         else return 0;
     };
-
-    const [showMapStyles, setShowMapStyles] = useState<boolean>(false);
+    
     const [toggleCheck, setToggleCheck] = useState<boolean>(props.user.trackingGeo);
     const [mapStyle, setMapStyle] = useState<string>(setThemeFromNumber(props.user.mapStyle));    
 
