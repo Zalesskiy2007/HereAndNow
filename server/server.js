@@ -59,7 +59,9 @@ const server = http.createServer(
     app
 );
 
-const io = new Server(server);
+const io = new Server(server, {
+    maxHttpBufferSize: 1e8 // something about 100mb
+});
 
 mongoose.connect('mongodb://127.0.0.1:27017/HereAndNow');
 
@@ -246,6 +248,183 @@ io.on('connection', (socket) => {
                         };
 
                         socket.emit('setPerson', JSON.stringify(obj));
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('requestFriends', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        let arr = [];
+                        let unex = [];
+                        for (let i = 0; i < res.friends.length; i++) {
+                            User.findOne({ _id: res.friends[i] })
+                                .then((fr) => {
+                                    if (!fr) {
+                                        unex.push(i);
+                                    } else {
+                                        let obj = {
+                                            name: fr.name,
+                                            login: fr.login,
+                                            id: fr._id,
+                                            coordLng: fr.coordLng,
+                                            coordLat: fr.coordLat,
+                                            imageSrc: fr.imageSrc,
+                                            trackingGeo: fr.trackingGeo
+                                        };
+
+                                        arr.push(obj);
+                                    }
+                                })
+                                .catch((e) => {
+                                    console.log('Error: ' + e);
+                                });
+                        }
+
+                        let newArr = res.friends;
+                        for (let i = 0; i < unex.length; i++) {
+                            newArr = newArr.filter((num) => num !== unex[i]);
+                        }
+
+                        User.updateOne({ sessionId: sId }, { friends: newArr })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+
+                        socket.emit('setFriends', JSON.stringify({ friends: arr }));
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('requestFriendsReceived', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        let arr = [];
+                        let unex = [];
+                        for (let i = 0; i < res.friendsReceivedReq.length; i++) {
+                            User.findOne({ _id: res.friendsReceivedReq[i] })
+                                .then((fr) => {
+                                    if (!fr) {
+                                        unex.push(i);
+                                    } else {
+                                        let obj = {
+                                            name: fr.name,
+                                            login: fr.login,
+                                            id: fr._id,
+                                            coordLng: fr.coordLng,
+                                            coordLat: fr.coordLat,
+                                            imageSrc: fr.imageSrc,
+                                            trackingGeo: fr.trackingGeo
+                                        };
+
+                                        arr.push(obj);
+                                    }
+                                })
+                                .catch((e) => {
+                                    console.log('Error: ' + e);
+                                });
+                        }
+
+                        let newArr = res.friendsReceivedReq;
+                        for (let i = 0; i < unex.length; i++) {
+                            newArr = newArr.filter((num) => num !== unex[i]);
+                        }
+
+                        User.updateOne({ sessionId: sId }, { friendsReceivedReq: newArr })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+
+                        socket.emit('setFriendsReceived', JSON.stringify({ friends: arr }));
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('requestFriendsSent', (data) => {
+        if (data !== cookieNoneValue) {
+            let sId = parseInt(data);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        let arr = [];
+                        let unex = [];
+                        for (let i = 0; i < res.friendsSentReq.length; i++) {
+                            User.findOne({ _id: res.friendsSentReq[i] })
+                                .then((fr) => {
+                                    if (!fr) {
+                                        unex.push(i);
+                                    } else {
+                                        let obj = {
+                                            name: fr.name,
+                                            login: fr.login,
+                                            id: fr._id,
+                                            coordLng: fr.coordLng,
+                                            coordLat: fr.coordLat,
+                                            imageSrc: fr.imageSrc,
+                                            trackingGeo: fr.trackingGeo
+                                        };
+
+                                        arr.push(obj);
+                                    }
+                                })
+                                .catch((e) => {
+                                    console.log('Error: ' + e);
+                                });
+                        }
+
+                        let newArr = res.friendsSentReq;
+                        for (let i = 0; i < unex.length; i++) {
+                            newArr = newArr.filter((num) => num !== unex[i]);
+                        }
+
+                        User.updateOne({ sessionId: sId }, { friendsSentReq: newArr })
+                            .then((q) => {})
+                            .catch((p) => {
+                                console.log('Error: ' + p);
+                            });
+
+                        socket.emit('setFriendsSent', JSON.stringify({ friends: arr }));
                     }
                 })
                 .catch((err) => {
