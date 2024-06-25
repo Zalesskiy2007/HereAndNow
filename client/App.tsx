@@ -47,12 +47,20 @@ export function App() {
 
     let [friends, setFriends] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
     let [friendsData, setFriendsData] = useState("");
+    let friendsFlag = useRef(false);
+    let friendsRef = useRef<_Friend[]>([]);
 
     let [friendsReceived, setFriendsReceived] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
-    let [friendsReceivedData, setFriendsReceivedData] = useState("");
+    let [friendsDataReceived, setFriendsDataReceived] = useState("");
+    let friendsFlagReceived = useRef(false);
+    let friendsRefReceived = useRef<_Friend[]>([]);
+
 
     let [friendsSent, setFriendsSent] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
-    let [friendsSentData, setFriendsSentData] = useState("");
+    let [friendsDataSent, setFriendsDataSent] = useState("");
+    let friendsFlagSent = useRef(false);
+    let friendsRefSent = useRef<_Friend[]>([]);
+
 
     useEffect(() => {
         socket.on("connect", () => {
@@ -78,19 +86,58 @@ export function App() {
             console.log("setUserData");
         });  
 
-        socket.on('setFriends', (data) => {
-            setFriendsData(data);
-            console.log("setFriendsData: " + data);
+        socket.on('setFriends', (d) => {
+            let data = JSON.parse(d);
+            
+            if (data.stage === "start") {
+                friendsFlag.current = true;
+                friendsRef.current = [];
+                console.log("start");
+            } else if (data.stage === "add") {
+                let fr = Friend(data.friend.name, data.friend.login, data.friend.id, data.friend.coordLng, data.friend.coordLat, data.friend.imageSrc, data.friend.trackingGeo);
+                friendsRef.current = [...friendsRef.current, fr];
+                console.log("add");
+            } else if (data.stage === "end") {
+                setFriendsData(JSON.stringify(friendsRef.current));
+                console.log("end");
+                friendsFlag.current = false;
+            }          
         });
 
-        socket.on('setFriendsReceived', (data) => {
-            setFriendsReceivedData(data);
-            console.log("setFriendsReceivedData: " + data);
+        socket.on('setFriendsReceived', (d) => {
+            let data = JSON.parse(d);
+            
+            if (data.stage === "start") {
+                friendsFlagReceived.current = true;
+                friendsRefReceived.current = [];
+                console.log("startR");
+            } else if (data.stage === "add") {
+                let fr = Friend(data.friend.name, data.friend.login, data.friend.id, data.friend.coordLng, data.friend.coordLat, data.friend.imageSrc, data.friend.trackingGeo);
+                friendsRefReceived.current = [...friendsRefReceived.current, fr];
+                console.log("addR");
+            } else if (data.stage === "end") {
+                setFriendsDataReceived(JSON.stringify(friendsRefReceived.current));
+                console.log("endR");
+                friendsFlagReceived.current = false;
+            }          
         });
 
-        socket.on('setFriendsSent', (data) => {
-            setFriendsSentData(data);
-            console.log("setFriendsSentData: " + data);
+        socket.on('setFriendsSent', (d) => {
+            let data = JSON.parse(d);
+            
+            if (data.stage === "start") {
+                friendsFlagSent.current = true;
+                friendsRefSent.current = [];
+                console.log("startS");
+            } else if (data.stage === "add") {
+                let fr = Friend(data.friend.name, data.friend.login, data.friend.id, data.friend.coordLng, data.friend.coordLat, data.friend.imageSrc, data.friend.trackingGeo);
+                friendsRefSent.current = [...friendsRefSent.current, fr];
+                console.log("addS");
+            } else if (data.stage === "end") {
+                setFriendsDataSent(JSON.stringify(friendsRefSent.current));
+                console.log("endS");
+                friendsFlagSent.current = false;
+            }          
         });
         
         return () => {
@@ -100,6 +147,7 @@ export function App() {
         };        
     }, []);
 
+    // User updater
     useEffect(() => {
         if (userData !== "") {
             let d = JSON.parse(userData);        
@@ -109,42 +157,35 @@ export function App() {
         }        
     }, [userData]);
 
+    // Friends updater
     useEffect(() => {
         if (friendsData !== "") {
-            let data: any[] = JSON.parse(friendsData).friends;
-            
-            for (let i = 0; i < data.length; i++) {
-                let fr = Friend(data[i].name, data[i].login, data[i].id, data[i].coordLng, data[i].coordLat, data[i].imageSrc, data[i].trackingGeo); 
-                
-                setFriends((frArr) => [...frArr, fr]);
-            }
+            let d = JSON.parse(friendsData);                    
+            setFriends(d);
+            console.log("setFriends: " + friendsData);
         }        
     }, [friendsData]);
 
-    useEffect(() => {
-        if (friendsReceivedData !== "") {
-            let data: any[] = JSON.parse(friendsReceivedData).friends;
-            
-            for (let i = 0; i < data.length; i++) {
-                let fr = Friend(data[i].name, data[i].login, data[i].id, data[i].coordLng, data[i].coordLat, data[i].imageSrc, data[i].trackingGeo); 
-                
-                setFriendsReceived((frArr) => [...frArr, fr]);
-            }
-        }        
-    }, [friendsReceivedData]);
 
+    // Friends received updater
     useEffect(() => {
-        if (friendsSentData !== "") {
-            let data: any[] = JSON.parse(friendsSentData).friends;
-            
-            for (let i = 0; i < data.length; i++) {
-                let fr = Friend(data[i].name, data[i].login, data[i].id, data[i].coordLng, data[i].coordLat, data[i].imageSrc, data[i].trackingGeo); 
-                
-                setFriendsSent((frArr) => [...frArr, fr]);
-            }
+        if (friendsDataReceived !== "") {
+            let d = JSON.parse(friendsDataReceived);                    
+            setFriendsReceived(d);
+            console.log("setFriendsReceived: " + friendsDataReceived);
         }        
-    }, [friendsSentData]);
+    }, [friendsDataReceived]);
 
+    // Friends sent updater
+    useEffect(() => {
+        if (friendsDataSent !== "") {
+            let d = JSON.parse(friendsDataSent);                    
+            setFriendsSent(d);
+            console.log("setFriendsSent: " + friendsDataSent);
+        }        
+    }, [friendsDataSent]);
+
+    // Geo tracker
     useEffect(() => {
         let b = setAuthFromSesId(sesId);
 
@@ -180,6 +221,7 @@ export function App() {
         };        
     }, [user.trackingGeo, sesId]);
 
+    // Requests emitter about user and his friends
     useEffect(() => {
         let b = setAuthFromSesId(sesId);
         setIsAuth(b); 
@@ -188,11 +230,22 @@ export function App() {
             clearInterval(intervalReq.current);
             intervalReq.current = setIntervalImmediatly(() => {                                
                 socket.emit("requestPerson", sesId);
-                socket.emit("requestFriends", sesId);
-                socket.emit("requestFriendsReceived", sesId);
-                socket.emit("requestFriendsSent", sesId);
+                console.log("requestPerson");
 
-                console.log("requestPersonAndFriends");
+                if (friendsFlag.current === false) {
+                    socket.emit("requestFriends", sesId);
+                    console.log("requestFriends");
+                }      
+                
+                if (friendsFlagReceived.current === false) {
+                    socket.emit("requestFriendsReceived", sesId);
+                    console.log("requestFriendsReceived");
+                }  
+                
+                if (friendsFlagSent.current === false) {
+                    socket.emit("requestFriendsSent", sesId);
+                    console.log("requestFriendsSent");
+                }  
             }, 2000);
             console.log("Start interval req");
         } else {
@@ -204,6 +257,7 @@ export function App() {
         };
     }, [sesId]);
 
+    // Resolution effect
     useEffect(() => {
         function updateVH() {
             const vh = window.innerHeight * 0.01;

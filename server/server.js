@@ -306,7 +306,11 @@ io.on('connection', (socket) => {
                                 console.log('Error: ' + p);
                             });
 
-                        socket.emit('setFriends', JSON.stringify({ friends: arr }));
+                        socket.emit('setFriends', JSON.stringify({ stage: 'start' }));
+                        for (let i = 0; i < arr.length; i++) {
+                            socket.emit('setFriends', JSON.stringify({ stage: 'add', friend: arr[i] }));
+                        }
+                        socket.emit('setFriends', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
@@ -365,7 +369,11 @@ io.on('connection', (socket) => {
                                 console.log('Error: ' + p);
                             });
 
-                        socket.emit('setFriendsReceived', JSON.stringify({ friends: arr }));
+                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'start' }));
+                        for (let i = 0; i < arr.length; i++) {
+                            socket.emit('setFriendsReceived', JSON.stringify({ stage: 'add', friend: arr[i] }));
+                        }
+                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
@@ -424,7 +432,11 @@ io.on('connection', (socket) => {
                                 console.log('Error: ' + p);
                             });
 
-                        socket.emit('setFriendsSent', JSON.stringify({ friends: arr }));
+                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'start' }));
+                        for (let i = 0; i < arr.length; i++) {
+                            socket.emit('setFriendsSent', JSON.stringify({ stage: 'add', friend: arr[i] }));
+                        }
+                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
