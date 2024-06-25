@@ -76,7 +76,21 @@ export function App() {
         });
         socket.on("logOut", () => {
             cookie.deleteCookie(cookie.name);      
-            setSesId(cookie.noneValue);  
+            setSesId(cookie.noneValue); 
+            
+            setUserData("");
+            setFriendsData("");
+            setFriendsDataReceived("");
+            setFriendsDataSent("");
+
+            friendsFlag.current = false;
+            friendsRef.current = [];
+
+            friendsFlagReceived.current = false;
+            friendsRefReceived.current = [];
+
+            friendsFlagSent.current = false;
+            friendsRefSent.current = [];
             
             console.log("logOut");
         });
