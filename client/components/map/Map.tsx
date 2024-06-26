@@ -34,6 +34,12 @@ export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isA
         else return 'https://api.maptiler.com/maps/streets/style.json?key=tgMhLsjzo9PFbyrDjEbt';
     };
 
+    let [mapFr, setMapFr] = useState<_Friend[]>(props.friends);
+
+    useEffect(() => {
+        setMapFr(props.friends);
+    }, [props.friends, props.user]);
+
     return (
         <Maplibre
             onClick={() => {}}
@@ -44,14 +50,28 @@ export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isA
                 zoom: 10
             }}
             mapStyle={chooseStyle(props.user.mapStyle)}
-        >
-            <div className="popup-wrapper">
+        >     
+
+            {
+                mapFr.map((fr) => {
+                    return (
+                        <div key={fr.id} className="popup-wrapper">                
+                            <Marker
+                                lng={fr.coordLng}
+                                lat={fr.coordLat}
+                                imageURL={fr.imageSrc}
+                            />
+                        </div>                         
+                    );
+                })
+            }        
+            <div className="popup-wrapper">                
                 <Marker
                     lng={props.user.coordLng}
                     lat={props.user.coordLat}
                     imageURL={props.user.imageSrc}
                 />
-            </div>
+            </div>            
         </Maplibre>
     );
 }

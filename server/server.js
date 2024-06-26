@@ -60,7 +60,9 @@ const server = http.createServer(
 );
 
 const io = new Server(server, {
-    maxHttpBufferSize: 1e8 // something about 100mb
+    maxHttpBufferSize: 1e8, // something about 100mb,
+    pingInterval: 25000,
+    pingTimeout: 60000
 });
 
 mongoose.connect('mongodb://127.0.0.1:27017/HereAndNow');

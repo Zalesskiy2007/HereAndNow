@@ -15,7 +15,7 @@ import { io } from 'socket.io-client';
 import {User, Friend, _User, _Friend} from "./User";
 import * as cookie from "./utils/Cookie-util";
 
-let socket = io();
+let socket = io({reconnection: true, reconnectionAttempts: Infinity, reconnectionDelay: 1000, reconnectionDelayMax: 5000, timeout: 20000});
 const spbCoords = {
         lng: 30.3158,
         lat: 59.9398
