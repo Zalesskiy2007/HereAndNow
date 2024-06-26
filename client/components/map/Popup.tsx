@@ -4,14 +4,17 @@ import {
 } from '../../../node_modules/react-map-gl/dist/es5/exports-maplibre';
 
 
-export function Marker(props: { lng: number; lat: number; imageURL: string }) {
+export function Marker(props: { lng: number; lat: number; imageURL: string, isHideGeo: boolean }) {
+
+    
+
     return (
         <Popup
             longitude={props.lng}
             latitude={props.lat}
             closeButton={false}
             closeOnClick={false}
-            anchor="bottom"
+            anchor="bottom"            
         >
             {/* <h2>Popup</h2> */}
             <img src={props.imageURL} className="popup-image" />

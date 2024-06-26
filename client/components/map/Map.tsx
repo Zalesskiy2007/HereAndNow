@@ -55,11 +55,12 @@ export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isA
             {
                 mapFr.map((fr) => {
                     return (
-                        <div key={fr.id} className="popup-wrapper">                
+                        <div key={fr.id} className="popup-wrapper">
                             <Marker
                                 lng={fr.coordLng}
                                 lat={fr.coordLat}
                                 imageURL={fr.imageSrc}
+                                isHideGeo={!fr.trackingGeo}
                             />
                         </div>                         
                     );
@@ -70,6 +71,7 @@ export function Map(props: {socket: Socket, user: _User, friends: _Friend[], isA
                     lng={props.user.coordLng}
                     lat={props.user.coordLat}
                     imageURL={props.user.imageSrc}
+                    isHideGeo={!props.user.trackingGeo}
                 />
             </div>            
         </Maplibre>

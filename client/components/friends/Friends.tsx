@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { Socket, io } from 'socket.io-client';
 import * as cookie from "../../utils/Cookie-util";
@@ -89,21 +89,34 @@ export function Friends(props: {socket: Socket, user: _User, friends: _Friend[],
             setSearchTerm(event.target.value);        
             props.socket.emit("searchUsers", JSON.stringify({ sId: props.sesId, str: event.target.value }));
         }        
-    };
+    };    
 
-    const handleAddFriend = (id: string) => {         
+    const handleAddFriend = (id: string) => {                   
         props.socket.emit("addFriend", JSON.stringify({ sId: props.sesId, id: id }));        
     };
 
     const handleRemoveFriend = (id: string) => {
+        setStateFriends((prev) => prev.filter((d) => d.id !== id));                
+        setStateFriendsReq((prev) => prev.filter((d) => d.id !== id));                
+        setStateFriendsSent((prev) => prev.filter((d) => d.id !== id));                
         props.socket.emit("deleteFriend", JSON.stringify({ sId: props.sesId, id: id }));
     };    
 
     const handleAcceptRequest = (id: string) => {        
+        setStateFriends((prev) => {
+            let a = findByIdInArray(id, prev);
+            let arr = prev;
+            if (a !== null) {
+                arr.push(a);
+            }
+            return arr;
+        });
+        setStateFriendsReq((prev) => prev.filter((d) => d.id !== id));                
         props.socket.emit("acceptFriend", JSON.stringify({ sId: props.sesId, id: id }));
     };
 
-    const handleDeclineRequest = (id: string) => {        
+    const handleDeclineRequest = (id: string) => {
+        setStateFriendsReq((prev) => prev.filter((d) => d.id !== id));        
         props.socket.emit("declineFriend", JSON.stringify({ sId: props.sesId, id: id }));
     };
 
