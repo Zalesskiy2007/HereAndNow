@@ -1,24 +1,24 @@
 export class _User {
     name: string;
     login: string;
-    id: number;
+    id: string;
     coordLng: number;
     coordLat: number;
-    friends: number[];
-    friendsReceivedReq: number[];
-    friendsSentReq: number[];
+    friends: string[];
+    friendsReceivedReq: string[];
+    friendsSentReq: string[];
     imageSrc: string;
     trackingGeo: boolean;
     mapStyle: number;
 
     constructor(    newname: string,
                     newlogin: string,
-                    newid: number,
+                    newid: string,
                     newcoordLng: number,
                     newcoordLat: number,
-                    newfriends: number[],
-                    newfriendsReceivedReq: number[],
-                    newfriendsSentReq: number[],
+                    newfriends: string[],
+                    newfriendsReceivedReq: string[],
+                    newfriendsSentReq: string[],
                     newimageSrc: string,
                     newtrackingGeo: boolean,
                     newmapStyle: number 
@@ -40,7 +40,7 @@ export class _User {
 export class _Friend {
     name: string;
     login: string;
-    id: number;
+    id: string;
     coordLng: number;
     coordLat: number; 
     imageSrc: string;
@@ -48,7 +48,7 @@ export class _Friend {
 
     constructor(    newname: string,
                     newlogin: string,
-                    newid: number,
+                    newid: string,
                     newcoordLng: number,
                     newcoordLat: number,
                     newimageSrc: string,
@@ -64,10 +64,10 @@ export class _Friend {
     }
 }
 
-export function User(...args: [string, string, number, number, number, number[], number[], number[], string, boolean, number]) {
+export function User(...args: [string, string, string, number, number, string[], string[], string[], string, boolean, number]) {
     return new _User(...args);
 }
 
-export function Friend(...args: [string, string, number, number, number, string, boolean]) {
+export function Friend(...args: [string, string, string, number, number, string, boolean]) {
     return new _Friend(...args);
 }

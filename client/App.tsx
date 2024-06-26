@@ -42,21 +42,21 @@ export function App() {
     let intervalReq = useRef<NodeJS.Timeout | undefined>(undefined);
     let intervalSetPos = useRef<NodeJS.Timeout | undefined>(undefined);
 
-    let [user, setUser] = useState<_User>(User("abc", "test", -1, spbCoords.lng, spbCoords.lat, [-1], [-1], [-1], "-", false, -1));
+    let [user, setUser] = useState<_User>(User("abc", "test", "p", spbCoords.lng, spbCoords.lat, ["q"], ["w"], ["l"], "-", false, -1));
     let [userData, setUserData] = useState("");
 
-    let [friends, setFriends] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
+    let [friends, setFriends] = useState<_Friend[]>([]);
     let [friendsData, setFriendsData] = useState("");
     let friendsFlag = useRef(false);
     let friendsRef = useRef<_Friend[]>([]);
 
-    let [friendsReceived, setFriendsReceived] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
+    let [friendsReceived, setFriendsReceived] = useState<_Friend[]>([]);
     let [friendsDataReceived, setFriendsDataReceived] = useState("");
     let friendsFlagReceived = useRef(false);
     let friendsRefReceived = useRef<_Friend[]>([]);
 
 
-    let [friendsSent, setFriendsSent] = useState<_Friend[]>([Friend("fr", "fr", -1, spbCoords.lng, spbCoords.lat, "-", false)]);
+    let [friendsSent, setFriendsSent] = useState<_Friend[]>([]);
     let [friendsDataSent, setFriendsDataSent] = useState("");
     let friendsFlagSent = useRef(false);
     let friendsRefSent = useRef<_Friend[]>([]);
@@ -113,6 +113,7 @@ export function App() {
                 console.log("add");
             } else if (data.stage === "end") {
                 setFriendsData(JSON.stringify(friendsRef.current));
+                console.log("setFriendsData: " + JSON.stringify(friendsRef.current));
                 console.log("end");
                 friendsFlag.current = false;
             }          
@@ -298,7 +299,7 @@ export function App() {
                             <Switch>
                                 <Route path="/map" render={(props) => (<MapPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
                                 <Route path="/settings" render={(props) => (<SettingsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
-                                <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId}/>)} />
+                                <Route path="/friends" render={(props) => (<FriendsPage {...props} socket={socket} user={user} friends={friends} isAuth={isAuth} sesId={sesId} friendsReq={friendsReceived} friendsSent={friendsSent}/>)} />
                                 <Redirect exact from="/" to="/map" />
                             </Switch>
                         </div>

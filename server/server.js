@@ -2,7 +2,7 @@ import http from 'https';
 import express from 'express';
 import morgan from 'morgan';
 import { Server } from 'socket.io';
-import fs from 'fs';
+import fs, { rmSync } from 'fs';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -264,53 +264,69 @@ io.on('connection', (socket) => {
         if (data !== cookieNoneValue) {
             let sId = parseInt(data);
 
+            let findById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            let getById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return a[i];
+                    }
+                }
+
+                return null;
+            };
+
             User.findOne({ sessionId: sId })
                 .then((res) => {
                     if (!res) {
                         socket.emit('logOut');
                     } else {
-                        let arr = [];
-                        let unex = [];
-                        for (let i = 0; i < res.friends.length; i++) {
-                            User.findOne({ _id: res.friends[i] })
-                                .then((fr) => {
-                                    if (!fr) {
-                                        unex.push(i);
-                                    } else {
+                        let usArr = [];
+                        let toDel = [];
+                        User.find()
+                            .then((all) => {
+                                for (let i = 0; i < res.friends.length; i++) {
+                                    if (findById(res.friends[i], all)) {
+                                        let a = getById(res.friends[i], all);
                                         let obj = {
-                                            name: fr.name,
-                                            login: fr.login,
-                                            id: fr._id,
-                                            coordLng: fr.coordLng,
-                                            coordLat: fr.coordLat,
-                                            imageSrc: fr.imageSrc,
-                                            trackingGeo: fr.trackingGeo
+                                            name: a.name,
+                                            login: a.login,
+                                            id: a._id,
+                                            coordLng: a.coordLng,
+                                            coordLat: a.coordLat,
+                                            imageSrc: a.imageSrc,
+                                            trackingGeo: a.trackingGeo
                                         };
 
-                                        arr.push(obj);
+                                        usArr.push(obj);
+                                    } else {
+                                        toDel.push(res.friends[i]);
                                     }
-                                })
-                                .catch((e) => {
-                                    console.log('Error: ' + e);
-                                });
-                        }
+                                }
 
-                        let newArr = res.friends;
-                        for (let i = 0; i < unex.length; i++) {
-                            newArr = newArr.filter((num) => num !== unex[i]);
-                        }
+                                let newArr = res.friends.filter((q) => !toDel.includes(q));
 
-                        User.updateOne({ sessionId: sId }, { friends: newArr })
-                            .then((q) => {})
-                            .catch((p) => {
-                                console.log('Error: ' + p);
+                                User.updateOne({ sessionId: sId }, { friends: newArr })
+                                    .then((k) => {
+                                        socket.emit('setFriends', JSON.stringify({ stage: 'start' }));
+                                        for (let i = 0; i < usArr.length; i++) {
+                                            socket.emit('setFriends', JSON.stringify({ stage: 'add', friend: usArr[i] }));
+                                        }
+                                        socket.emit('setFriends', JSON.stringify({ stage: 'end' }));
+                                    })
+                                    .catch((p) => {});
+                            })
+                            .catch((j) => {
+                                console.log('j ' + j);
                             });
-
-                        socket.emit('setFriends', JSON.stringify({ stage: 'start' }));
-                        for (let i = 0; i < arr.length; i++) {
-                            socket.emit('setFriends', JSON.stringify({ stage: 'add', friend: arr[i] }));
-                        }
-                        socket.emit('setFriends', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
@@ -327,53 +343,69 @@ io.on('connection', (socket) => {
         if (data !== cookieNoneValue) {
             let sId = parseInt(data);
 
+            let findById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            let getById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return a[i];
+                    }
+                }
+
+                return null;
+            };
+
             User.findOne({ sessionId: sId })
                 .then((res) => {
                     if (!res) {
                         socket.emit('logOut');
                     } else {
-                        let arr = [];
-                        let unex = [];
-                        for (let i = 0; i < res.friendsReceivedReq.length; i++) {
-                            User.findOne({ _id: res.friendsReceivedReq[i] })
-                                .then((fr) => {
-                                    if (!fr) {
-                                        unex.push(i);
-                                    } else {
+                        let usArr = [];
+                        let toDel = [];
+                        User.find()
+                            .then((all) => {
+                                for (let i = 0; i < res.friendsReceivedReq.length; i++) {
+                                    if (findById(res.friendsReceivedReq[i], all)) {
+                                        let a = getById(res.friendsReceivedReq[i], all);
                                         let obj = {
-                                            name: fr.name,
-                                            login: fr.login,
-                                            id: fr._id,
-                                            coordLng: fr.coordLng,
-                                            coordLat: fr.coordLat,
-                                            imageSrc: fr.imageSrc,
-                                            trackingGeo: fr.trackingGeo
+                                            name: a.name,
+                                            login: a.login,
+                                            id: a._id,
+                                            coordLng: a.coordLng,
+                                            coordLat: a.coordLat,
+                                            imageSrc: a.imageSrc,
+                                            trackingGeo: a.trackingGeo
                                         };
 
-                                        arr.push(obj);
+                                        usArr.push(obj);
+                                    } else {
+                                        toDel.push(res.friendsReceivedReq[i]);
                                     }
-                                })
-                                .catch((e) => {
-                                    console.log('Error: ' + e);
-                                });
-                        }
+                                }
 
-                        let newArr = res.friendsReceivedReq;
-                        for (let i = 0; i < unex.length; i++) {
-                            newArr = newArr.filter((num) => num !== unex[i]);
-                        }
+                                let newArr = res.friendsReceivedReq.filter((q) => !toDel.includes(q));
 
-                        User.updateOne({ sessionId: sId }, { friendsReceivedReq: newArr })
-                            .then((q) => {})
-                            .catch((p) => {
-                                console.log('Error: ' + p);
+                                User.updateOne({ sessionId: sId }, { friendsReceivedReq: newArr })
+                                    .then((k) => {
+                                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'start' }));
+                                        for (let i = 0; i < usArr.length; i++) {
+                                            socket.emit('setFriendsReceived', JSON.stringify({ stage: 'add', friend: usArr[i] }));
+                                        }
+                                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'end' }));
+                                    })
+                                    .catch((p) => {});
+                            })
+                            .catch((j) => {
+                                console.log('j ' + j);
                             });
-
-                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'start' }));
-                        for (let i = 0; i < arr.length; i++) {
-                            socket.emit('setFriendsReceived', JSON.stringify({ stage: 'add', friend: arr[i] }));
-                        }
-                        socket.emit('setFriendsReceived', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
@@ -390,53 +422,69 @@ io.on('connection', (socket) => {
         if (data !== cookieNoneValue) {
             let sId = parseInt(data);
 
+            let findById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            let getById = (num, a) => {
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i].id === num) {
+                        return a[i];
+                    }
+                }
+
+                return null;
+            };
+
             User.findOne({ sessionId: sId })
                 .then((res) => {
                     if (!res) {
                         socket.emit('logOut');
                     } else {
-                        let arr = [];
-                        let unex = [];
-                        for (let i = 0; i < res.friendsSentReq.length; i++) {
-                            User.findOne({ _id: res.friendsSentReq[i] })
-                                .then((fr) => {
-                                    if (!fr) {
-                                        unex.push(i);
-                                    } else {
+                        let usArr = [];
+                        let toDel = [];
+                        User.find()
+                            .then((all) => {
+                                for (let i = 0; i < res.friendsSentReq.length; i++) {
+                                    if (findById(res.friendsSentReq[i], all)) {
+                                        let a = getById(res.friendsSentReq[i], all);
                                         let obj = {
-                                            name: fr.name,
-                                            login: fr.login,
-                                            id: fr._id,
-                                            coordLng: fr.coordLng,
-                                            coordLat: fr.coordLat,
-                                            imageSrc: fr.imageSrc,
-                                            trackingGeo: fr.trackingGeo
+                                            name: a.name,
+                                            login: a.login,
+                                            id: a._id,
+                                            coordLng: a.coordLng,
+                                            coordLat: a.coordLat,
+                                            imageSrc: a.imageSrc,
+                                            trackingGeo: a.trackingGeo
                                         };
 
-                                        arr.push(obj);
+                                        usArr.push(obj);
+                                    } else {
+                                        toDel.push(res.friendsSentReq[i]);
                                     }
-                                })
-                                .catch((e) => {
-                                    console.log('Error: ' + e);
-                                });
-                        }
+                                }
 
-                        let newArr = res.friendsSentReq;
-                        for (let i = 0; i < unex.length; i++) {
-                            newArr = newArr.filter((num) => num !== unex[i]);
-                        }
+                                let newArr = res.friendsSentReq.filter((q) => !toDel.includes(q));
 
-                        User.updateOne({ sessionId: sId }, { friendsSentReq: newArr })
-                            .then((q) => {})
-                            .catch((p) => {
-                                console.log('Error: ' + p);
+                                User.updateOne({ sessionId: sId }, { friendsSentReq: newArr })
+                                    .then((k) => {
+                                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'start' }));
+                                        for (let i = 0; i < usArr.length; i++) {
+                                            socket.emit('setFriendsSent', JSON.stringify({ stage: 'add', friend: usArr[i] }));
+                                        }
+                                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'end' }));
+                                    })
+                                    .catch((p) => {});
+                            })
+                            .catch((j) => {
+                                console.log('j ' + j);
                             });
-
-                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'start' }));
-                        for (let i = 0; i < arr.length; i++) {
-                            socket.emit('setFriendsSent', JSON.stringify({ stage: 'add', friend: arr[i] }));
-                        }
-                        socket.emit('setFriendsSent', JSON.stringify({ stage: 'end' }));
                     }
                 })
                 .catch((err) => {
@@ -598,6 +646,250 @@ io.on('connection', (socket) => {
                     console.log('Error: ' + err);
                     socket.emit('logOut');
                 });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('addFriend', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+            let id = data.id;
+            console.log(data.id);
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        if (res.friendsReceivedReq.includes(id)) {
+                            User.updateOne({ sessionId: sId }, { friendsReceivedReq: res.friendsReceivedReq.filter((e) => e !== id), friends: [...res.friends, id] })
+                                .then((u) => {})
+                                .catch((q) => {
+                                    console.log('Erfror: ' + q);
+                                });
+
+                            User.findOne({ _id: id })
+                                .then((w) => {
+                                    if (w) {
+                                        User.updateOne({ _id: id }, { friendsSentReq: w.friendsSentReq.filter((e) => e !== res.id), friends: [...w.friends, res.id] })
+                                            .then((u) => {})
+                                            .catch((q) => {
+                                                console.log('Esrror: ' + q);
+                                            });
+                                    }
+                                })
+                                .catch((er) => {});
+                        } else {
+                            console.log('abc');
+                            User.updateOne({ sessionId: sId }, { friendsSentReq: [...res.friendsSentReq, id] })
+                                .then((u) => {})
+                                .catch((q) => {
+                                    console.log('Erbror: ' + q);
+                                });
+
+                            User.findOne({ _id: id })
+                                .then((w) => {
+                                    if (w) {
+                                        User.updateOne({ _id: id }, { friendsReceivedReq: [...w.friendsReceivedReq, res.id] })
+                                            .then((u) => {
+                                                console.log('abc-u');
+                                            })
+                                            .catch((q) => {
+                                                console.log('Errtor: ' + q);
+                                            });
+                                    }
+                                })
+                                .catch((er) => {});
+                        }
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('deleteFriend', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+            let id = data.id;
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.findOne({ _id: id })
+                            .then((fi) => {
+                                if (fi) {
+                                    User.updateOne(
+                                        { _id: id },
+                                        {
+                                            friends: fi.friends.filter((b) => b !== res.id),
+                                            friendsReceivedReq: fi.friendsReceivedReq.filter((b) => b !== res.id),
+                                            friendsSentReq: fi.friendsSentReq.filter((b) => b !== res.id)
+                                        }
+                                    )
+                                        .then((hanR) => {})
+                                        .catch((hanE) => {});
+                                }
+                            })
+                            .catch((f) => {
+                                console.log(f);
+                            });
+
+                        User.findOne({ sessionId: sId })
+                            .then((fi) => {
+                                User.updateOne(
+                                    { sessionId: sId },
+                                    {
+                                        friends: fi.friends.filter((b) => b !== id),
+                                        friendsReceivedReq: fi.friendsReceivedReq.filter((b) => b !== id),
+                                        friendsSentReq: fi.friendsSentReq.filter((b) => b !== id)
+                                    }
+                                )
+                                    .then((hanR) => {})
+                                    .catch((hanE) => {});
+                            })
+                            .catch((f) => {
+                                console.log(f);
+                            });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('acceptFriend', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+            let id = data.id;
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { friendsReceivedReq: res.friendsReceivedReq.filter((e) => e !== id), friends: [...res.friends, id] })
+                            .then((u) => {})
+                            .catch((q) => {
+                                console.log('Erfror: ' + q);
+                            });
+
+                        User.findOne({ _id: id })
+                            .then((w) => {
+                                if (w) {
+                                    User.updateOne({ _id: id }, { friendsSentReq: w.friendsSentReq.filter((e) => e !== res.id), friends: [...w.friends, res.id] })
+                                        .then((u) => {})
+                                        .catch((q) => {
+                                            console.log('Esrror: ' + q);
+                                        });
+                                }
+                            })
+                            .catch((er) => {});
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('declineFriend', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            let sId = parseInt(data.sId);
+            let id = data.id;
+
+            User.findOne({ sessionId: sId })
+                .then((res) => {
+                    if (!res) {
+                        socket.emit('logOut');
+                    } else {
+                        User.updateOne({ sessionId: sId }, { friendsReceivedReq: res.friendsReceivedReq.filter((e) => e !== id) })
+                            .then((u) => {})
+                            .catch((q) => {
+                                console.log('Erfror: ' + q);
+                            });
+
+                        User.findOne({ _id: id })
+                            .then((w) => {
+                                if (w) {
+                                    User.updateOne({ _id: id }, { friendsSentReq: w.friendsSentReq.filter((e) => e !== res.id) })
+                                        .then((u) => {})
+                                        .catch((q) => {
+                                            console.log('Esrror: ' + q);
+                                        });
+                                }
+                            })
+                            .catch((er) => {});
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    socket.emit('logOut');
+                });
+        } else {
+            socket.emit('logOut');
+        }
+    });
+
+    socket.on('searchUsers', (d) => {
+        let data = JSON.parse(d);
+        if (data.sId !== cookieNoneValue) {
+            User.findOne({ sessionId: data.sId })
+                .then((cur) => {
+                    if (cur) {
+                        User.find()
+                            .then((res) => {
+                                if (res) {
+                                    socket.emit('setSearchResults', JSON.stringify({ step: 'start' }));
+                                    for (let i = 0; i < res.length; i++) {
+                                        let fr = res[i];
+                                        if (fr.sessionId !== cur.sessionId && fr.login.toLowerCase().includes(data.str.toLowerCase())) {
+                                            let obj = {
+                                                name: fr.name,
+                                                login: fr.login,
+                                                id: fr._id,
+                                                coordLng: fr.coordLng,
+                                                coordLat: fr.coordLat,
+                                                imageSrc: fr.imageSrc,
+                                                trackingGeo: fr.trackingGeo
+                                            };
+
+                                            socket.emit('setSearchResults', JSON.stringify({ step: 'add', us: obj }));
+                                        }
+                                    }
+                                    socket.emit('setSearchResults', JSON.stringify({ step: 'end' }));
+                                }
+                            })
+                            .catch((err) => {
+                                console.log(err);
+
+                                socket.emit('logOut');
+                            });
+                    }
+                })
+                .catch((ops) => {});
         } else {
             socket.emit('logOut');
         }

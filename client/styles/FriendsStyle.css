@@ -15,6 +15,7 @@
   font-family: 'SF UI Display Header';
   src: url('../assets/fonts/SFUIText-Medium.ttf');
 }
+
 .friends-wrapper {
   display: flex;
   width: 100%;
@@ -24,6 +25,7 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+
 .friends-content {
   min-width: 33%;
   max-width: 50vh;
@@ -42,23 +44,41 @@
   box-sizing: border-box;
   padding-bottom: 3vh;
 }
+
 .div-row-friends {
   width: 80%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .friends-header {
   height: 10%;
   font-family: 'SF UI Display Header';
-  font-size: min(2vw, 1.5vh);
+  font-size: min(2.2vw, 1.8vh);
+
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
 }
+
+.friends-header h1 {
+  margin-bottom: 0.15em;
+}
+
+.friends-mode-wrapper {
+  flex-direction: column;
+  width: 100%;
+  height: 90%;
+}
+
 .friends-search {
   height: 10%;
 }
+
 .friends-search input {
   width: 100%;
-  height: 50%;
+  height: 60%;
   border-radius: 1.2vh;
   background-color: rgb(207, 207, 188);
   border: none;
@@ -75,8 +95,10 @@
 
   transition: all 0.25s ease-out;
 }
+
 .friends-search input::placeholder {
   /* transform: translateX(calc(50% - calc(((100vw - 20vw) - 20%) * 0.05))); */
+  color: rgb(100, 100, 100);
   transition: all 0.25s ease-out;
 }
 
@@ -167,4 +189,79 @@
   padding: 0.5em 0.8em;
   margin-left: auto;
   margin-right: 0.8em;
+}
+
+.requests-button {
+  /* position: absolute;
+
+  top: 3%;
+  right: 10%; */
+
+  display: flex;
+  justify-content: right;
+  align-items: end;
+
+  width: 25%;
+  height: 50%;
+}
+
+.requests-button button {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* padding: 15% 25%; */
+  background-color: rgb(76.5, 119.85, 204);
+  border: none;
+  border-radius: 0.8em;
+  color: white;
+  font-size: min(2.5vw, 1.5vh);
+  font-family: 'SF UI Display';
+  cursor: pointer;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.requests-button button.active::after {
+  content: "";
+  width: 2vmin;
+  height: 2vmin;
+  background-color: rgb(210, 30, 20);
+
+  position: absolute;
+  border-radius: 100%;
+
+  top: -5%;
+  right: -2%;
+}
+
+.requests-button button.active:active {
+  background-color: rgb(64, 97, 165);
+}
+
+.accept-decline-buttons {
+  margin-left: auto;
+
+  display: flex;
+}
+
+.accept-decline-buttons button {
+  width: 50%;
+  right: 1em;
+  font-family: 'SF UI Display';
+  font-size: min(2.5vw, 1.5vh);
+  background-color: rgb(76.5, 119.85, 204);
+  color: white;
+  border: none;
+  border-radius: 0.8em;
+  padding: 0.5em 0.8em;
+  margin-left: auto;
+  margin-right: 0.8em;
+}
+
+.no-requests {
+  text-align: center;
+  font-family: "SF UI Display";
+  font-size: min(3vw, 1.8vh);
+  color: rgb(100, 100, 100);
 }
