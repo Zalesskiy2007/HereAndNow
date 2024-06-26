@@ -123,3 +123,16 @@ h2 {
   align-items: center;
   justify-content: center;
 }
+
+.row-password label {
+  display: inline-block;
+  font-family: 'SF UI Display';
+  font-size: 1.5vh;
+  width: 50%;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.row-password {
+  flex-direction: column;
+}

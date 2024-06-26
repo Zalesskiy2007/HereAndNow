@@ -210,6 +210,9 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding-left: 3%;
+  padding-right: 1%;
+  box-sizing: border-box;
 }
 
 .hide-geo-toggle input {
@@ -232,7 +235,9 @@
 
   padding: 0.5%;
   box-sizing: border-box;
-  
+
+  margin-left: auto;
+
   transition: background-color 0.2s;
 }
 
@@ -355,6 +360,10 @@
   
   border-radius: 1.5vh;
   border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background-color: transparent;
   color: white;

@@ -155,7 +155,11 @@ io.on('connection', (socket) => {
                             .catch((e) => {
                                 console.log('Error: ' + e);
                             });
+                    } else {
+                        socket.emit('incorrectPassOrLog');
                     }
+                } else {
+                    socket.emit('incorrectPassOrLog');
                 }
             })
             .catch((err) => {
